@@ -91,8 +91,7 @@
           <p style="font-style: normal; font-weight: bold;">
               Selamat datang di laman WebGIS Integrasi Transportasi Publik Provinsi Jawa Timur
           </p>
-          <button onclick="openPopup('textPopup')">Open Text Popup</button>
-          <button onclick="openPopup('imagePopup')">Open Image Popup</button>
+          <button onclick="openImageSlider()">Buka Rencana Aksi</button>
       </div>
 
       <div class="leaflet-sidebar-pane" id="layers">
@@ -100,31 +99,73 @@
       </div>
   </div>
 
-  <!-- Text Popup -->
-  <div id="textPopup" style="display: none; position: fixed; background: rgba(0, 0, 0, 0.5); top: 0; left: 0; width: 100%; height: 100%; align-items: center; justify-content: center;">
-      <div style="background: #fff; padding: 20px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); max-width: 500px; margin: auto;">
-          <span style="float: right; cursor: pointer;" onclick="closePopup('textPopup')">&times;</span>
-          <h2>Tabel Rencana Aksi</h2>
-          <p>Nanti diisi rencana aksi</p>
-      </div>
-  </div>
-
-  <!-- Image Popup -->
-  <div id="imagePopup" style="display: none; position: fixed; background: rgba(0, 0, 0, 0.5); top: 0; left: 0; width: 100%; height: 100%; align-items: center; justify-content: center;">
-      <div style="background: #fff; padding: 20px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); max-width: 500px; margin: auto;">
-          <span style="float: right; cursor: pointer;" onclick="closePopup('imagePopup')">&times;</span>
-          <h2>Peta Rencana Aksi</h2>
-          <img src="image/placeholder.jpg" alt="Sample Image" style="max-width: 100%; height: auto;">
+  <!-- Image Slider -->
+  <div id="imageSlider" class="popup" style="display: none;">
+      <div class="popup-content">
+          <span class="popup-close" onclick="closeImageSlider()">&times;</span>
+          <h2>Image Slider</h2>
+          <div id="imageContainer">
+              <button onclick="prevImage()" style="position: absolute; top: 50%; left: 0;">&lt;</button>
+              <button onclick="nextImage()" style="position: absolute; top: 50%; right: 0;">&gt;</button>
+              <img src="image/rencana/RA0.png" alt="Rencana Aksi Kompilasi">
+              <img src="image/rencana/RA1.png" alt="Rencana Aksi 1">
+              <img src="image/rencana/RA2.png" alt="Rencana Aksi 2">
+              <img src="image/rencana/RA3.png" alt="Rencana Aksi 3">
+              <img src="image/rencana/RA4.png" alt="Rencana Aksi 4">
+              <img src="image/rencana/RA5.png" alt="Rencana Aksi 5">
+              <img src="image/rencana/RA6.png" alt="Rencana Aksi 6">
+              <img src="image/rencana/RA7.png" alt="Rencana Aksi 7">
+              <img src="image/rencana/RA8.png" alt="Rencana Aksi 8">
+              <img src="image/rencana/RA9.png" alt="Rencana Aksi 9">
+              <img src="image/rencana/RA10.png" alt="Rencana Aksi 10">
+              <img src="image/rencana/RA20.png" alt="Rencana Aksi 20">
+              <img src="image/rencana/RA21.png" alt="Rencana Aksi 21">
+              <img src="image/rencana/RA22.png" alt="Rencana Aksi 22">
+          </div>
       </div>
   </div>
 
   <script>
-      function openPopup(popupId) {
-          document.getElementById(popupId).style.display = 'flex';
+      let currentImageIndex = 0;
+      const images = document.querySelectorAll('#imageContainer img');
+
+      function openImageSlider() {
+          document.getElementById('imageSlider').style.display = 'flex';
+          showCurrentImage();
+          document.addEventListener('keydown', handleKeyPress);
       }
 
-      function closePopup(popupId) {
-          document.getElementById(popupId).style.display = 'none';
+      function closeImageSlider() {
+          document.getElementById('imageSlider').style.display = 'none';
+          document.removeEventListener('keydown', handleKeyPress);
+      }
+
+      function handleKeyPress(event) {
+          if (event.key === 'ArrowLeft') {
+              prevImage();
+          } else if (event.key === 'ArrowRight') {
+              nextImage();
+          }
+      }
+
+      function prevImage() {
+          currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+          showCurrentImage();
+      }
+
+      function nextImage() {
+          currentImageIndex = (currentImageIndex + 1) % images.length;
+          showCurrentImage();
+      }
+
+      function showCurrentImage() {
+          images.forEach((img, index) => {
+              if (index === currentImageIndex) {
+                  img.style.display = 'block';
+              } else {
+                  img.style.display = 'none';
+              }
+          });
       }
   </script>
     </div>
