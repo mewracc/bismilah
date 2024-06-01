@@ -50,6 +50,20 @@
         border: 2px none rgba(0, 0, 0, 0.2);
         background-clip: padding-box;
       }
+
+      .button-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            justify-items: center;
+            margin-top: 20px;
+        }
+        .button-container button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+        }
     </style>
   </head>
   <body>
@@ -91,7 +105,13 @@
           <p style="font-style: normal; font-weight: bold;">
               Selamat datang di laman WebGIS Integrasi Transportasi Publik Provinsi Jawa Timur
           </p>
-          <button onclick="openImageSlider()">Buka Rencana Aksi</button>
+          <div class="button-container">
+              <button onclick="openImageSlider('set1')" style="grid-column: 1 / span 3;">Rencana Aksi</button>
+              <button onclick="openImageSlider('set2')" style="grid-column: 1 / span 3;">Kelola Metropolitan Terpadu</button>
+              <button onclick="openImageSlider('set3')" style="grid-column: 1 / span 3;">Jalanan Tenang dan Aman</button>
+              <button onclick="openImageSlider('set4')" style="grid-column: 1 / span 3;">Mobilitas Layak Huni dan Mudah Diakses</button>
+              <button onclick="openImageSlider('set5')" style="grid-column: 1 / span 3;">Angkutan Umum  Modern Terintegrasi</button>
+          </div>
       </div>
 
       <div class="leaflet-sidebar-pane" id="layers">
@@ -103,35 +123,31 @@
   <div id="imageSlider" class="popup" style="display: none;">
       <div class="popup-content">
           <span class="popup-close" onclick="closeImageSlider()">&times;</span>
-          <h2>Rencana Aksi SUMP GKS+</h2>
+          <h2>Rencana Aksi SUMP+</h2>
           <div id="imageContainer">
               <button onclick="prevImage()" style="position: absolute; top: 50%; left: 0;">&lt;</button>
               <button onclick="nextImage()" style="position: absolute; top: 50%; right: 0;">&gt;</button>
-              <img src="image/rencana/RA0.png" alt="Rencana Aksi Kompilasi">
-              <img src="image/rencana/RA1.png" alt="Rencana Aksi 1">
-              <img src="image/rencana/RA2.png" alt="Rencana Aksi 2">
-              <img src="image/rencana/RA3.png" alt="Rencana Aksi 3">
-              <img src="image/rencana/RA4.png" alt="Rencana Aksi 4">
-              <img src="image/rencana/RA5.png" alt="Rencana Aksi 5">
-              <img src="image/rencana/RA6.png" alt="Rencana Aksi 6">
-              <img src="image/rencana/RA7.png" alt="Rencana Aksi 7">
-              <img src="image/rencana/RA8.png" alt="Rencana Aksi 8">
-              <img src="image/rencana/RA9.png" alt="Rencana Aksi 9">
-              <img src="image/rencana/RA10.png" alt="Rencana Aksi 10">
-              <img src="image/rencana/RA20.png" alt="Rencana Aksi 20">
-              <img src="image/rencana/RA21.png" alt="Rencana Aksi 21">
-              <img src="image/rencana/RA22.png" alt="Rencana Aksi 22">
+              <img id="sliderImage" src="" alt="Slider Image" style="display: block; margin: auto;">
           </div>
       </div>
   </div>
 
   <script>
       let currentImageIndex = 0;
-      const images = document.querySelectorAll('#imageContainer img');
+      let currentImageSet = [];
+      const imageSets = {
+          set1: ['image/rencana/Rencana Aksi_Page_01.png'], 
+          set2: ['image/rencana/Rencana Aksi_Page_02.png', 'image/rencana/Rencana Aksi_Page_03.png', 'image/rencana/Rencana Aksi_Page_04.png', 'image/rencana/Rencana Aksi_Page_05.png'],
+          set3: ['image/rencana/Rencana Aksi_Page_06.png', 'image/rencana/Rencana Aksi_Page_07.png', 'image/rencana/Rencana Aksi_Page_08.png', 'image/rencana/Rencana Aksi_Page_09.png', 'image/rencana/Rencana Aksi_Page_10.png', 'image/rencana/Rencana Aksi_Page_11.png', 'image/rencana/Rencana Aksi_Page_12.png'],
+          set4: ['image/rencana/Rencana Aksi_Page_13.png', 'image/rencana/Rencana Aksi_Page_14.png', 'image/rencana/Rencana Aksi_Page_15.png', 'image/rencana/Rencana Aksi_Page_16.png', 'image/rencana/Rencana Aksi_Page_17.png', 'image/rencana/Rencana Aksi_Page_18.png', 'image/rencana/Rencana Aksi_Page_19.png'],
+          set5: ['image/rencana/Rencana Aksi_Page_20.png', 'image/rencana/Rencana Aksi_Page_21.png', 'image/rencana/Rencana Aksi_Page_22.png', 'image/rencana/Rencana Aksi_Page_23.png', 'image/rencana/Rencana Aksi_Page_24.png', 'image/rencana/Rencana Aksi_Page_25.png', 'image/rencana/Rencana Aksi_Page_26.png']
+      };
 
-      function openImageSlider() {
-          document.getElementById('imageSlider').style.display = 'flex';
+      function openImageSlider(set) {
+          currentImageSet = imageSets[set];
+          currentImageIndex = 0;
           showCurrentImage();
+          document.getElementById('imageSlider').style.display = 'flex';
           document.addEventListener('keydown', handleKeyPress);
       }
 
@@ -149,23 +165,18 @@
       }
 
       function prevImage() {
-          currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+          currentImageIndex = (currentImageIndex - 1 + currentImageSet.length) % currentImageSet.length;
           showCurrentImage();
       }
 
       function nextImage() {
-          currentImageIndex = (currentImageIndex + 1) % images.length;
+          currentImageIndex = (currentImageIndex + 1) % currentImageSet.length;
           showCurrentImage();
       }
 
       function showCurrentImage() {
-          images.forEach((img, index) => {
-              if (index === currentImageIndex) {
-                  img.style.display = 'block';
-              } else {
-                  img.style.display = 'none';
-              }
-          });
+          const imageElement = document.getElementById('sliderImage');
+          imageElement.src = currentImageSet[currentImageIndex];
       }
   </script>
     </div>
@@ -368,16 +379,11 @@
                 { type: "image", url: "/icon/Pelabuhan Pengumpul.png", text: "Pelabuhan Pengumpul" },
                 { type: "image", url: "/icon/Pelabuhan Penyeberangan.png", text: "Pelabuhan Penyeberangan" },
                 { type: "image", url: "/icon/Pelabuhan Utama.png", text: "Pelabuhan Utama" },
-                { type: "image", url: "/icon/Pangkalan Pendaratan Ikan.png", text: "Pangkalan Pendaratan Ikan" },
-                { type: "image", url: "/icon/Pelabuhan Perikanan Pantai.png", text: "Pelabuhan Perikanan Pantai" },
-                { type: "image", url: "/icon/Pelabuhan Perikanan Nusantara.png", text: "Pelabuhan Perikanan Nusantara" },
-                { type: "image", url: "/icon/Terminal Barang.png", text: "Terminal Barang" },
                 { type: "image", url: "/icon/Terminal Khusus.png", text: "Terminal Khusus" },
                 { type: "image", url: "/icon/Terminal Umum.png", text: "Terminal Umum" },
                 { type: "image", url: "/icon/Terminal Penumpang Tipe A.png", text: "Terminal Penumpang Tipe A" },
                 { type: "image", url: "/icon/Terminal Penumpang Tipe B.png", text: "Terminal Penumpang Tipe B" },
                 { type: "image", url: "/icon/Stasiun Kereta Api", text: "Stasiun Kereta Api" },
-                { type: "image", url: "/icon/Jembatan Timbang.png", text: "Jembatan Timbang" },
               ],
             },
             {
